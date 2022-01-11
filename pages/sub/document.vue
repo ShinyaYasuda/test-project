@@ -2,45 +2,60 @@
     <div>
         <p>sub document file</p>
         <v-text-field label="text search" v-model="query"></v-text-field>
-        <v-card v-for="post in posts" :key="post.id">
-            <v-card-title>{{ post.title }}</v-card-title>
-            <v-card-subtitle>{{post.userId + " : " + getName(post.userId) }}</v-card-subtitle>
-            <v-card-text>{{ post.body }}</v-card-text>
-        </v-card>
+        <div v-if="posts.length">
+            <v-card v-for="post in posts" :key="post.id">
+                <v-card-title>{{ post.title }}</v-card-title>
+                <v-card-subtitle>{{post.userId + " : " + getName(post.userId) }}</v-card-subtitle>
+                <v-card-text>{{ post.body }}</v-card-text>
+            </v-card>
+        </div>
+        <div v-else>
+            <v-card>
+                <v-card-title>NO DATA</v-card-title>
+            </v-card>
+        </div>
     </div>
 </template>
-<script>
+<script >
 import axios from 'axios'
-export default ({
+// import {Post} from "~/types/post"
+// import {User} from "~/types/user"
+export default {
     data: () => ({
-        posts: {
+        posts: [{
             body : "",
             id : 0,
-            title : "No Data",
+            title : "",
             userId : 0
-        },
-        user: [
-            {id : 0, name: "NO DATA"},
-            {id : 1, name: "Tanaka Taro"},
-            {id : 2, name: "Suzuki Ichiro"},
-            {id : 3, name: "Maeda Jiro"},
-            {id : 4, name: "Toyota Seiji"},
-            {id : 5, name: "Hirokawa Masao"},
-            {id : 6, name: "Aoyama Teru"},
-            {id : 7, name: "Takagi Tsutomu"},
-            {id : 8, name: "John Taylor"},
-            {id : 9, name: "Tom Wood"},
-            {id : 10, name: "Sam Fender"},
-            ],
+        }],
+        users: [{
+            id : 0,
+            name : "",
+            userName : "",
+            email : "",
+            address : {
+                street : "",
+                suite : "",
+                city : "",
+                zipcode : "",
+                geo : {
+                    lat : "",
+                    lng : ""
+                }
+            },
+            phone : "",
+            website : "",
+            company: {
+                name : "",
+                catchPhrase : "",
+                bs : "" 
+            }
+        }],
         query: ""
     }),
   watch: {
       query: function () {
         this.getData(this.query).then(response => this.posts = response.posts)
-        // console.log(this.posts)
-        if (this.posts.length == 0) {
-            this.posts = {body : "", id:0, title:"NO DATA", userId:0}
-        }
       }
   },
   methods: {
@@ -50,32 +65,37 @@ export default ({
             url += '?userId=' + query
         }
         const result = await axios.get(url)
-        // console.log("result.data.posts")
-        // console.log(result.data.length)
-        // if (result.data.length === 0) {
-        //     console.log("no")
-        //     console.log({posts: {body : "", id:0, title:"NO DATA", userId:0}})
-        //     console.log(result)
-        //     return {posts: {body : "", id:0, title:"NO DATA", userId:0}}
-        // }
+        
         return {
             posts: result.data
         }
 
     },
-      getName: function(userId) {
-          let name = {...{...this.user.filter( a => a.id == userId )}[0]}.name
-        //   if (name === undefined){
-        //       name = "NO DATA"
-        //   }
-          return name
-      }
+    getName: function(userId) {
+        let name = {...{...this.users.filter( a => a.id == userId )}[0]}.name
+        return name
+    }
+  },
+//   async asyncData() {
+//   },
+  async fetch() {
+    this.$nuxt.$loading.start && this.$nuxt.$loading.start();
+
+    let urlPosts = 'https://jsonplaceholder.typicode.com/posts'
+    let urlUsers = 'https://jsonplaceholder.typicode.com/users'
+
+    await Promise.all([
+        axios.get(urlPosts).then(response => this.posts = response.data),
+        axios.get(urlUsers).then(response => this.users = response.data)
+    ]);
+    this.$nuxt.$loading.finish();
   }
+
 //   ,
 //   mounted: function() {
 //       console.log("moounted")
 //       this.getData("")
 //   }
 
-})
+}
 </script>
