@@ -4,7 +4,6 @@
       <nuxt-link to="/">Home</nuxt-link><br>
       <nuxt-link to="/inspire">INSPIRE</nuxt-link><br>
       <nuxt-link to="/sub">SUB</nuxt-link><br>
-      <nuxt-link to="/sub/document">SUB DOC</nuxt-link><br>
     </v-col>
   </v-row>
 </template>
