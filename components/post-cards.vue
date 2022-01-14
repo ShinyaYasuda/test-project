@@ -16,13 +16,14 @@
     </v-row>
 </template>
 <script lang="ts" >
+import Vue from 'vue'
 import postCard from '~/components/post-card.vue'
 import {Post} from "~/types/post"
 import {User} from "~/types/user"
-export default {
+export default Vue.extend({
     props: {
         posts : [],
-        users : []
+        users : [] 
         },
     components: { postCard },
     data: () => ({
@@ -30,16 +31,16 @@ export default {
         users: [] as User[]
     }),
     methods: {
-        getName: function(userId: number) {
-            let name = {...{...this.users.filter( a => a.id == userId )}[0]}.name
+        getName: function(userId: number): string {
+            let name : string = {...{...this.users.filter( a => a.id == userId )}[0]}.name
             return name
     },
-    mounted: function() {
+    mounted: function(): void {
         this.$data.posts = this.$props.posts
         this.$data.users = this.$props.users
     }
   }
-}
+})
 </script>
 <style>
 .list-complete-item {

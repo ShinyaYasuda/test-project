@@ -2,7 +2,7 @@
     <div>
         <v-container>
             <v-row>
-                <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="ユーザーID" v-model="queryUserId"></v-text-field></v-col>
+                <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field id="textUserId" label="ユーザーID" v-model="queryUserId"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="ユーザー名" v-model="queryName"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="タイトル" v-model="queryTitle"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="本文" v-model="queryBody"></v-text-field></v-col>
@@ -18,11 +18,12 @@
 </template>
 <script lang="ts" >
 import axios from 'axios'
+import Vue from 'vue'
 import postCard from '~/components/post-card.vue'
 import PostCards from '~/components/post-cards.vue'
 import {Post} from "~/types/post"
 import {User} from "~/types/user"
-export default {
+export default Vue.extend({
   components: { postCard, PostCards },
     data: () => ({
         posts: [] as Post[],
@@ -55,7 +56,7 @@ export default {
       }
   },
   methods: {
-    reset: function() {
+    reset: function(): void {
         this.queryUserId = ""
         this.queryName = ""
         this.queryTitle = ""
@@ -63,18 +64,25 @@ export default {
         this.sortUserId = 0
         this.sortTitle = 0
     },
-    changeSortTitle() {
+    changeSortTitle(): void {
         this.sortTitle = (this.sortTitle + 1) % 3
     },
-    changeSortUserId() {
+    changeSortUserId(): void {
         this.sortUserId = (this.sortUserId + 1) % 3
     },
-    getSortArrow: function(num: number) {
-        if ( num == 0 ) return "→"
-        if ( num == 1 ) return "↓"
-        if ( num == 2 ) return "↑"
+    getSortArrow: function(num: number): string {
+        switch (num) {
+            case 0:
+                return "→"
+            case 1:
+                return "↓"
+            case 2:
+                return "↑"
+            default:
+                return ""
+        }
     },
-    sort: function() {
+    sort: function(): void {
         this.posts.sort((a: Post,b: Post) : number => {
             if (this.sortTitle === 0 && this.sortUserId === 0){
                 if (a.id < b.id) return -1
@@ -173,5 +181,5 @@ export default {
 
     this.$nuxt.$loading.finish();
   }
-}
+})
 </script>

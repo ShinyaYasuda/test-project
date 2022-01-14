@@ -21,12 +21,13 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import axios from 'axios'
 import {Post} from "~/types/post"
 import {User} from "~/types/user"
 import {Comment} from "~/types/comment"
 import postCard from '~/components/post-card.vue'
-export default {
+export default Vue.extend({
   components: { postCard },
     data: () => ({
         posts: [] as Post[],
@@ -60,5 +61,5 @@ export default {
 
         this.$nuxt.$loading.finish();
     }
-}
+})
 </script>

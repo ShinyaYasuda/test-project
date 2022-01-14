@@ -6,8 +6,9 @@
     </v-card>
 </template>
 <script lang="ts" >
+import Vue from 'vue'
 import {Post} from "~/types/post"
-export default {
+export default Vue.extend({
     props: {
         post : Object,
         userName : String
@@ -15,5 +16,5 @@ export default {
     data: () => ({
         posts: [] as Post[]
     })
-}
+})
 </script>
