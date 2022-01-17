@@ -2,7 +2,7 @@
     <div>
         <v-container>
             <v-row>
-                <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field id="textUserId" label="ユーザーID" v-model="queryUserId"></v-text-field></v-col>
+                <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field data-testid="textUserId" label="ユーザーID" v-model="queryUserId"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="ユーザー名" v-model="queryName"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="タイトル" v-model="queryTitle"></v-text-field></v-col>
                 <v-col cols="12" sm="6" lg="6" xl="3"><v-text-field label="本文" v-model="queryBody"></v-text-field></v-col>

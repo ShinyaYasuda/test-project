@@ -3,7 +3,7 @@
     <v-row v-if="posts.length">
         <transition-group name="list-complete" tag="div">
             <v-col v-for="post in posts" :key="post.id" cols="12" sm="6" lg="4" xl="3" class="list-complete-item">
-                <post-card :post="post" :userName="getName(post.userId)"></post-card>
+                <post-card :post="post" :userName="getName(post.userId)" data-testid="postcard"></post-card>
             </v-col>
         </transition-group>
     </v-row>
