@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-container>
-      <p>comments</p>
+      <p>コメント</p>
       <v-row>
         <v-col
           v-for="comment in comments"

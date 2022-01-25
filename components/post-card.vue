@@ -1,9 +1,8 @@
 <template>
-  <!-- <v-card :to="{ path: 'posts/' + post.id }"> -->
   <v-card>
-    <v-card-title>{{ post.title }}</v-card-title>
+    <v-card-title><span v-html="post.title"></span></v-card-title>
     <v-card-subtitle>{{ post.userId + " : " + userName }}</v-card-subtitle>
-    <v-card-text>{{ post.body }}</v-card-text>
+    <v-card-text><span v-html="post.body"></span></v-card-text>
   </v-card>
 </template>
 <script lang="ts">
@@ -17,11 +16,5 @@ export default Vue.extend({
   data: () => ({
     posts: [] as Post[],
   }),
-  //   watch: {
-  //       noselect: function() {
-  //           if (this.noselect ===)
-  //       }
-  //   },
-  //   methods: {},
 });
 </script>

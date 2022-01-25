@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="main">
     <v-container>
       <v-row>
         <v-col cols="12" sm="6" lg="6" xl="3"
@@ -33,9 +33,15 @@
             タイトル{{ getSortArrow(sortTitle) }}
           </button></v-col
         >
+        <v-col cols="4" sm="4" lg="2" xl="1"
+          ><button @click="outputCsv">CSV</button></v-col
+        >
+        <v-col cols="4" sm="4" lg="2" xl="1" v-if="selectedId !== 0"
+          ><button @click="unselect">戻る</button></v-col
+        >
       </v-row>
       <post-cards :posts="posts" :users="users" :passid="getid"></post-cards>
-      <comments v-if="posts.length === 1" :id="posts[0].id"></comments>
+      <comments v-if="selectedId !== 0" :id="posts[0].id"></comments>
     </v-container>
   </div>
 </template>
@@ -47,6 +53,7 @@ import postCard from "~/components/post-card.vue";
 import PostCards from "~/components/post-cards.vue";
 import { Post } from "~/types/post";
 import { User } from "~/types/user";
+import { Parser } from "json2csv";
 export default Vue.extend({
   components: { postCard, PostCards, Comments },
   data: () => ({
@@ -84,6 +91,33 @@ export default Vue.extend({
     },
   },
   methods: {
+    outputCsv: function () {
+      const fields = ["field1", "field2", "field3"];
+      //   const opts = { fields };
+
+      const spanStart = "<span style='background-color: brown'>";
+      const spanEnd = "</span>";
+      let csvParser = new Parser();
+
+      try {
+        const csv = csvParser.parse(
+          this.posts.map((e) => {
+            return {
+              id: e.id,
+              userId: e.userId,
+              title: e.title.replaceAll(spanStart, "").replaceAll(spanEnd, ""),
+              body: e.body.replaceAll(spanStart, "").replaceAll(spanEnd, ""),
+            };
+          })
+        );
+        console.log(csv);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    unselect: function () {
+      this.selectedId = 0;
+    },
     getid: function (id: number) {
       this.selectedId = id;
     },
@@ -173,6 +207,34 @@ export default Vue.extend({
         }
       });
     },
+    getSearchString(original: string, search: string, start: number): string {
+      let ret: string = original;
+      const spanStart = "<span style='background-color: brown'>";
+      const spanEnd = "</span>";
+
+      if (original.indexOf(search, start) !== -1) {
+        ret =
+          original.substring(0, start) +
+          original.substring(start, original.indexOf(search, start)) +
+          spanStart +
+          original.substring(
+            original.indexOf(search, start),
+            original.indexOf(search, start) + search.length
+          ) +
+          spanEnd +
+          original.substring(original.indexOf(search, start) + search.length);
+
+        ret = this.getSearchString(
+          ret,
+          search,
+          original.indexOf(search, start) +
+            search.length +
+            spanStart.length +
+            spanEnd.length
+        );
+      }
+      return ret;
+    },
   },
   async fetch() {
     this.$nuxt.$loading.start && this.$nuxt.$loading.start();
@@ -207,21 +269,39 @@ export default Vue.extend({
     }
 
     if (this.queryTitle.trim() != "") {
-      arrayPosts = arrayPosts.filter(
-        (array) =>
-          array.title
-            .toLowerCase()
-            .indexOf(this.queryTitle.trim().toLowerCase()) != -1
-      );
+      arrayPosts = arrayPosts
+        .filter(
+          (array) =>
+            array.title
+              .toLowerCase()
+              .indexOf(this.queryTitle.trim().toLowerCase()) != -1
+        )
+        .map((m) => {
+          return {
+            body: m.body,
+            id: m.id,
+            title: this.getSearchString(m.title, this.queryTitle, 0),
+            userId: m.userId,
+          };
+        });
     }
 
     if (this.queryBody.trim() != "") {
-      arrayPosts = arrayPosts.filter(
-        (array) =>
-          array.body
-            .toLowerCase()
-            .indexOf(this.queryBody.trim().toLowerCase()) != -1
-      );
+      arrayPosts = arrayPosts
+        .filter(
+          (array) =>
+            array.body
+              .toLowerCase()
+              .indexOf(this.queryBody.trim().toLowerCase()) != -1
+        )
+        .map((m) => {
+          return {
+            body: this.getSearchString(m.body, this.queryBody, 0),
+            id: m.id,
+            title: m.title,
+            userId: m.userId,
+          };
+        });
     }
 
     this.posts = arrayPosts;
@@ -233,3 +313,10 @@ export default Vue.extend({
   },
 });
 </script>
+<style>
+#main button {
+  padding: 5px;
+  background-color: #333333;
+  border-radius: 10px;
+}
+</style>
