@@ -37,7 +37,7 @@ export default Vue.extend({
   props: {
     posts: [],
     users: [],
-    passid: Object,
+    passid: Function,
   },
   components: { postCard },
   data: () => ({
@@ -51,20 +51,6 @@ export default Vue.extend({
       }.name;
       return name;
     },
-    // mounted: function (): void {
-    //   console.log(this.$props);
-    //   this.$data.posts = this.$props.postsProp;
-    //   this.$data.users = this.$props.users;
-    // },
-    // passid: function (id: number): void {
-    //   //   console.log(this.posts);
-    //   //   let postData: Post[];
-    //   //   postData = this.posts;
-    //   //   this.$data.posts = postData.filter((a) => a.id == id);
-    //   //   console.log(this.$data.posts);
-    // //   console.log(id);
-    //   this.$emit("passid", id);
-    // },
   },
 });
 </script>

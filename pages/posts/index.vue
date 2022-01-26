@@ -51,9 +51,13 @@ import Vue from "vue";
 import Comments from "~/components/comments.vue";
 import postCard from "~/components/post-card.vue";
 import PostCards from "~/components/post-cards.vue";
+import moment from "moment-timezone";
 import { Post } from "~/types/post";
 import { User } from "~/types/user";
 import { Parser } from "json2csv";
+
+const spanStart = "<span style='background-color: brown'>";
+const spanEnd = "</span>";
 export default Vue.extend({
   components: { postCard, PostCards, Comments },
   data: () => ({
@@ -92,15 +96,10 @@ export default Vue.extend({
   },
   methods: {
     outputCsv: function () {
-      const fields = ["field1", "field2", "field3"];
-      //   const opts = { fields };
-
-      const spanStart = "<span style='background-color: brown'>";
-      const spanEnd = "</span>";
-      let csvParser = new Parser();
+      const csvParser = new Parser();
 
       try {
-        const csv = csvParser.parse(
+        let csv = csvParser.parse(
           this.posts.map((e) => {
             return {
               id: e.id,
@@ -110,7 +109,18 @@ export default Vue.extend({
             };
           })
         );
-        console.log(csv);
+        let bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+        let blob = new Blob([bom, csv], { type: "text/csv" });
+        let url = (window.URL || window.webkitURL).createObjectURL(blob);
+        let link = document.createElement("a");
+        link.download =
+          "posts_" +
+          moment.utc().tz("Asia/Tokyo").format("YYYYMMDDHHmmss") +
+          ".csv";
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } catch (err) {
         console.error(err);
       }
@@ -209,8 +219,6 @@ export default Vue.extend({
     },
     getSearchString(original: string, search: string, start: number): string {
       let ret: string = original;
-      const spanStart = "<span style='background-color: brown'>";
-      const spanEnd = "</span>";
 
       if (original.indexOf(search, start) !== -1) {
         ret =
